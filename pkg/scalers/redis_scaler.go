@@ -207,13 +207,21 @@ func parseRedisMetadata(config *ScalerConfig, parserFn redisAddressParser) (*red
 		return nil, fmt.Errorf("no list name given")
 	}
 
-	meta.databaseIndex = defaultDBIdx
-	if val, ok := config.TriggerMetadata["databaseIndex"]; ok {
-		dbIndex, err := strconv.ParseInt(val, 10, 32)
+	switch {
+	case config.TriggerMetadata["databaseIndex"] != "":
+		dbIndex, err := parseDatabaseIndex(config.TriggerMetadata["databaseIndex"])
 		if err != nil {
 			return nil, fmt.Errorf("databaseIndex: parsing error %s", err.Error())
 		}
-		meta.databaseIndex = int(dbIndex)
+		meta.databaseIndex = dbIndex
+	case config.TriggerMetadata["databaseIndexFromEnv"] != "":
+		dbIndex, err := parseDatabaseIndex(config.ResolvedEnv[config.TriggerMetadata["databaseIndexFromEnv"]])
+		if err != nil {
+			return nil, fmt.Errorf("databaseIndexFromEnv: parsing error %s", err.Error())
+		}
+		meta.databaseIndex = dbIndex
+	default:
+		meta.databaseIndex = defaultDBIdx
 	}
 	meta.scalerIndex = config.ScalerIndex
 	return &meta, nil
@@ -461,6 +469,11 @@ func parseRedisSentinelAddress(metadata, resolvedEnv, authParams map[string]stri
 	}
 
 	return info, nil
+}
+
+func parseDatabaseIndex(val string) (i int, err error) {
+	dbIndex, err := strconv.ParseInt(val, 10, 32)
+	return int(dbIndex), err
 }
 
 func getRedisClusterClient(ctx context.Context, info redisConnectionInfo) (*redis.ClusterClient, error) {

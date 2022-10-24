@@ -46,6 +46,7 @@ To learn more about active deprecations, we recommend checking [GitHub Discussio
 - **Azure Service Bus Scaler**: Add support for Shared Access Signature (SAS) tokens for authentication. ([#2920](https://github.com/kedacore/keda/issues/2920))
 - **Azure Service Bus Scaler:** Support regex usage in queueName / subscriptionName parameters. ([#1624](https://github.com/kedacore/keda/issues/1624))
 - **Selenium Grid Scaler:** Allow setting url trigger parameter from TriggerAuthentication/ClusterTriggerAuthentication ([#3752](https://github.com/kedacore/keda/pull/3752))
+- **Redis Scaler:** Fetch dbIndex from target env when no dbIndex provided ([#3766](https://github.com/kedacore/keda/issues/3766))
 
 ### Improvements
 
